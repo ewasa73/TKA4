@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en" translate="no" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>TKA English Competency CBT System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        brand: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Disable text selection and prevent copy-paste */
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        
+        /* Custom scrollbar for text passages */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between notranslate" translate="no">
+
+    <!-- SECURITY CHEATING WARNING MODAL -->
+    <div id="securityModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border-2 border-red-500">
+            <div class="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl animate-bounce">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Security Violation Detected!</h3>
+            <p class="text-sm text-slate-600 mb-6">
+                You have left the exam window or an auto-translation tool/extension was detected. According to exam regulations, <b>all your saved answers have been reset</b>.
+            </p>
+            <button onclick="dismissSecurityModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition shadow-lg">
+                I Understand & Continue
+            </button>
+        </div>
+    </div>
+
+    <!-- 1. LOGIN SCREEN SECTION -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-slate-900 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full border border-slate-200">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-50 text-brand-600 mb-4 shadow-inner">
+                    <i class="fa-solid fa-graduation-cap text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">TKA Competency CBT</h1>
+                <p class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">Academic Competency Test System</p>
+            </div>
+
+            <form id="loginForm" onsubmit="startExam(event)" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Full Name</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="studentName" required placeholder="Enter your complete name" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm outline-none transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Password / Access Key</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" id="studentPassword" required placeholder="Enter exam password" class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white text-sm outline-none transition">
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 space-y-2">
+                    <div class="font-bold flex items-center gap-1.5 text-amber-900">
+                        <i class="fa-solid fa-shield-halved"></i> Security & Exam Rules:
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 text-slate-600">
+                        <li>Duration: <b>60 Minutes</b> (17 Questions)</li>
+                        <li><b>Do not switch tabs</b> or minimize browser window.</li>
+                        <li>Automated translation & AI extensions are strictly forbidden.</li>
+                        <li>Leaving the page will instantly <b>wipe all answers</b>.</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2">
+                    <span>Start Test</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. MAIN EXAM INTERFACE -->
+    <div id="examScreen" class="hidden flex-col min-h-screen">
+        <!-- Top Navbar Header -->
+        <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-brand-600 text-white p-2 rounded-lg text-sm font-bold">
+                        <i class="fa-solid fa-file-pen"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-sm sm:text-base leading-tight">TKA English Test</h2>
+                        <p id="candidateDisplayName" class="text-xs text-slate-400">Student: Candidate</p>
+                    </div>
+                </div>
+
+                <!-- Timer & Actions -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl flex items-center gap-2">
+                        <i class="fa-regular fa-clock text-amber-400 text-sm"></i>
+                        <span id="timerDisplay" class="font-mono text-base sm:text-lg font-bold text-white">60:00</span>
+                    </div>
+
+                    <button onclick="toggleMobilePalette()" class="lg:hidden bg-slate-800 hover:bg-slate-700 text-slate-200 p-2.5 rounded-xl border border-slate-700 text-sm">
+                        <i class="fa-solid fa-grid-2"></i> Palette
+                    </button>
+
+                    <button onclick="confirmSubmitExam()" class="hidden sm:flex bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition shadow-lg shadow-emerald-600/20 items-center gap-1.5">
+                        <i class="fa-solid fa-check-double"></i> Submit Exam
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Question Container Column -->
+            <div class="lg:col-span-8 flex flex-col space-y-6">
+                <!-- Text Passage Box (If passage exists) -->
+                <div id="passageBox" class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hidden">
+                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-book-open"></i> Reading Context
+                        </span>
+                        <span class="text-xs text-slate-400">Scroll to read full passage</span>
+                    </div>
+                    <div id="passageContent" class="text-xs sm:text-sm text-slate-700 leading-relaxed max-h-60 overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                        <!-- Passage inserted dynamically -->
+                    </div>
+                </div>
+
+                <!-- Main Question Card -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm flex-1 flex flex-col justify-between">
+                    <div>
+                        <!-- Header Question Meta -->
+                        <div class="flex items-center justify-between mb-4">
+                            <span id="questionBadge" class="bg-slate-100 text-slate-700 font-bold text-xs px-3 py-1 rounded-full border border-slate-200">
+                                Question 1 of 17
+                            </span>
+                            <span id="questionTypeBadge" class="text-xs font-semibold text-slate-500 bg-brand-50 text-brand-700 px-2.5 py-1 rounded-md">
+                                Single Choice
+                            </span>
+                        </div>
+
+                        <!-- Question Prompt Text -->
+                        <div id="questionText" class="text-slate-900 font-medium text-sm sm:text-base leading-relaxed mb-6">
+                            <!-- Question text dynamically loaded -->
+                        </div>
+
+                        <!-- Options / Answer Area -->
+                        <div id="optionsContainer" class="space-y-3 mb-6">
+                            <!-- Options rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Question Navigation Controls Footer -->
+                    <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <button id="btnPrev" onclick="navigateQuestion(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-chevron-left"></i> Previous
+                            </button>
+                            <button id="btnNext" onclick="navigateQuestion(1)" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-1.5">
+                                Next <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <button id="btnDoubt" onclick="toggleDoubtMark()" class="flex-1 sm:flex-none border-2 border-amber-400 text-amber-700 hover:bg-amber-50 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-bookmark"></i> <span id="doubtBtnText">Mark Doubtful</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question Palette Column (Desktop & Collapsible Mobile) -->
+            <div id="paletteColumn" class="hidden lg:block lg:col-span-4 space-y-4">
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm sticky top-24">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-brand-600"></i> Question Navigation
+                        </h3>
+                        <button onclick="toggleMobilePalette()" class="lg:hidden text-slate-400 hover:text-slate-600">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Question Grid -->
+                    <div id="questionGrid" class="grid grid-cols-5 gap-2.5 mb-6">
+                        <!-- Grid buttons generated dynamically -->
+                    </div>
+
+                    <!-- Status Legend -->
+                    <div class="space-y-2 pt-4 border-t border-slate-100 text-xs">
+                        <div class="flex items-center justify-between text-slate-600">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-md bg-brand-600 border border-brand-700"></span> Answered
+                            </span>
+                            <span id="countAnswered" class="font-bold text-slate-800">0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-slate-600">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-md bg-amber-400 border border-amber-500"></span> Doubtful
+                            </span>
+                            <span id="countDoubtful" class="font-bold text-slate-800">0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-slate-600">
+                            <span class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded-md bg-slate-100 border border-slate-300"></span> Unanswered
+                            </span>
+                            <span id="countUnanswered" class="font-bold text-slate-800">25</span>
+                        </div>
+                    </div>
+
+                    <button onclick="confirmSubmitExam()" class="sm:hidden w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Finish & Submit Exam
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- 3. SCORE & RESULT SCREEN -->
+    <div id="resultScreen" class="hidden min-h-screen bg-slate-900 py-12 px-4 flex-col justify-center items-center">
+        <div class="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-6 sm:p-8 border border-slate-200">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <h1 class="text-2xl font-black text-slate-900">Exam Completed!</h1>
+                <p class="text-xs text-slate-500 mt-1">Here is your final TKA assessment score card</p>
+            </div>
+
+            <!-- Score Summary Card -->
+            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-6 text-center">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Final Score Percentage</p>
+                <div id="finalScoreDisplay" class="text-5xl font-black text-brand-600 mb-2">0%</div>
+                <p id="studentResultName" class="text-sm font-semibold text-slate-700">Student Name</p>
+            </div>
+
+            <!-- Detailed Breakdown Metrics -->
+            <div class="grid grid-cols-3 gap-3 mb-6 text-center">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3">
+                    <p class="text-xs text-emerald-700 font-semibold mb-1">Correct</p>
+                    <p id="correctCount" class="text-xl font-black text-emerald-800">0</p>
+                </div>
+                <div class="bg-red-50 border border-red-200 rounded-2xl p-3">
+                    <p class="text-xs text-red-700 font-semibold mb-1">Incorrect</p>
+                    <p id="incorrectCount" class="text-xl font-black text-red-800">0</p>
+                </div>
+                <div class="bg-slate-100 border border-slate-200 rounded-2xl p-3">
+                    <p class="text-xs text-slate-600 font-semibold mb-1">Total Questions</p>
+                    <p class="text-xl font-black text-slate-800">25</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="location.reload()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl transition text-xs sm:text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Retake Test
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // -------------------------------------------------------------
+        // TKA QUESTIONS DATABASE (25 QUESTIONS)
+        // -------------------------------------------------------------
+        const questionsData = [
+            {
+                id: 1,
+                type: "PG",
+                passage: `King Hung Vuong VI had a beautiful daughter. He did not want her to marry just any prince. So, he made an announcement that he was looking for the right husband for her. Many princes came from faraway lands, but none of them was a good match for the princess.\nSon Tinh was the Spirit of the Mountain, and Thuy Tinh was the Spirit of the Waters. One day, they both appeared as young noblemen and asked to marry the princess. They were equally talented, powerful, and respected. The King found it hard to choose, so he decided to give them a test. He said that the one who brought the proper wedding gifts first the next morning would marry his daughter.\nThe next day, Son Tinh arrived early with his gifts. The King kept his promise and gave the princess to him. Thuy Tinh was angry about losing. He challenged Son Tinh to fight for the princess. But Son Tinh refused, believing he had already won fairly. Furious, Thuy Tinh used his power to call the rivers and streams to rise. Soon, the land was covered with floods that destroyed crops and homes.\nSon Tinh stayed calm in his mountain palace. Whenever the water rose, he made his mountains higher. After many days of fighting, Thuy Tinh grew tired and ordered the waters to retreat. Still, he never accepted his defeat. Every year, he tried again to attack, and this is how monsoons came to Vietnam.`,
+                question: "Which of the following outlines shows the correct main points of the story?",
+                options: [
+                    "King Hung Vuong VI wanted the best husband for his daughter. Many princes came but none was suitable. Son Tinh and Thuy Tinh both wanted to marry her. The King gave them a test. Thuy Tinh arrived first with the wedding gifts. The princess was given to Thuy Tinh.",
+                    "King Hung Vuong VI had a beautiful daughter. He announced he was looking for the right husband. Son Tinh and Thuy Tinh appeared and asked to marry her. The King gave them a test with wedding gifts. Son Tinh arrived first and married the princess. Thuy Tinh attacked with floods but was defeated.",
+                    "King Hung Vuong VI asked his daughter to choose her husband. The princess liked both Son Tinh and Thuy Tinh. The King delayed his decision for many days. Finally, he asked them to fight each other. Thuy Tinh lost the battle and left the land. The country never suffered from floods again.",
+                    "King Hung Vuong VI searched for a husband for his daughter. Son Tinh and Thuy Tinh wanted to marry her. The King gave them a challenge. Thuy Tinh lost the test and became angry. He called the waters to rise and destroy the land. Son Tinh drowned in the floods.",
+                    "The King wanted a nobleman for his daughter. He invited many princes to the palace. Son Tinh and Thuy Tinh competed for the princess. Son Tinh refused the challenge of gifts. The King chose Thuy Tinh as the winner. Thuy Tinh ruled peacefully without floods."
+                ],
+                key: 1
+            },
+            {
+                id: 2,
+                type: "PG",
+                passage: `King Hung Vuong VI had a beautiful daughter. He did not want her to marry just any prince. So, he made an announcement that he was looking for the right husband for her. Many princes came from faraway lands, but none of them was a good match for the princess.\nSon Tinh was the Spirit of the Mountain, and Thuy Tinh was the Spirit of the Waters. One day, they both appeared as young noblemen and asked to marry the princess. They were equally talented, powerful, and respected. The King found it hard to choose, so he decided to give them a test. He said that the one who brought the proper wedding gifts first the next morning would marry his daughter.\nThe next day, Son Tinh arrived early with his gifts. The King kept his promise and gave the princess to him. Thuy Tinh was angry about losing. He challenged Son Tinh to fight for the princess. But Son Tinh refused, believing he had already won fairly. Furious, Thuy Tinh used his power to call the rivers and streams to rise. Soon, the land was covered with floods that destroyed crops and homes.\nSon Tinh stayed calm in his mountain palace. Whenever the water rose, he made his mountains higher. After many days of fighting, Thuy Tinh grew tired and ordered the waters to retreat. Still, he never accepted his defeat. Every year, he tried again to attack, and this is how monsoons came to Vietnam.`,
+                question: "Why did Thuy Tinh attack Son Tinh after the wedding?",
+                options: [
+                    "He was jealous of Son Tinh's victory.",
+                    "He believed the King had lied to him.",
+                    "He thought the princess loved him more.",
+                    "He wanted to show off his power to the king.",
+                    "He had promised to fight until death."
+                ],
+                key: 0
+            },
+            {
+                id: 3,
+                type: "CATEGORY",
+                passage: `King Hung Vuong VI had a beautiful daughter. He did not want her to marry just any prince. So, he made an announcement that he was looking for the right husband for her. Many princes came from faraway lands, but none of them was a good match for the princess.\nSon Tinh was the Spirit of the Mountain, and Thuy Tinh was the Spirit of the Waters. One day, they both appeared as young noblemen and asked to marry the princess. They were equally talented, powerful, and respected. The King found it hard to choose, so he decided to give them a test. He said that the one who brought the proper wedding gifts first the next morning would marry his daughter.\nThe next day, Son Tinh arrived early with his gifts. The King kept his promise and gave the princess to him. Thuy Tinh was angry about losing. He challenged Son Tinh to fight for the princess. But Son Tinh refused, believing he had already won fairly. Furious, Thuy Tinh used his power to call the rivers and streams to rise. Soon, the land was covered with floods that destroyed crops and homes.\nSon Tinh stayed calm in his mountain palace. Whenever the water rose, he made his mountains higher. After many days of fighting, Thuy Tinh grew tired and ordered the waters to retreat. Still, he never accepted his defeat. Every year, he tried again to attack, and this is how monsoons came to Vietnam.`,
+                question: "After reading the text, we can see that Son Tinh and Thuy Tinh are different, but they also have some similarities. Decide if each trait shows a similarity or a difference.",
+                rows: [
+                    { statement: "A. Both are not humans.", key: "Similarity" },
+                    { statement: "B. They can control the elements.", key: "Similarity" },
+                    { statement: "C. They love the king's daughter.", key: "Difference" }
+                ],
+                categories: ["Similarity", "Difference"]
+            },
+            {
+                id: 4,
+                type: "PG",
+                passage: `King Hung Vuong VI had a beautiful daughter. He did not want her to marry just any prince. So, he made an announcement that he was looking for the right husband for her. Many princes came from faraway lands, but none of them was a good match for the princess.\nSon Tinh was the Spirit of the Mountain, and Thuy Tinh was the Spirit of the Waters. One day, they both appeared as young noblemen and asked to marry the princess. They were equally talented, powerful, and respected. The King found it hard to choose, so he decided to give them a test. He said that the one who brought the proper wedding gifts first the next morning would marry his daughter.\nThe next day, Son Tinh arrived early with his gifts. The King kept his promise and gave the princess to him. Thuy Tinh was angry about losing. He challenged Son Tinh to fight for the princess. But Son Tinh refused, believing he had already won fairly. Furious, Thuy Tinh used his power to call the rivers and streams to rise. Soon, the land was covered with floods that destroyed crops and homes.\nSon Tinh stayed calm in his mountain palace. Whenever the water rose, he made his mountains higher. After many days of fighting, Thuy Tinh grew tired and ordered the waters to retreat. Still, he never accepted his defeat. Every year, he tried again to attack, and this is how monsoons came to Vietnam.`,
+                question: "What does the phrase 'kept his promise' in the text mean?",
+                options: [
+                    "Forgot about his decision.",
+                    "Changed his mind about the wedding.",
+                    "Did what he had promised to do.",
+                    "Delayed the marriage for many days.",
+                    "The King asked the princes to bring more gifts."
+                ],
+                key: 2
+            },
+            {
+                id: 5,
+                type: "MCMA",
+                passage: `King Hung Vuong VI had a beautiful daughter. He did not want her to marry just any prince. So, he made an announcement that he was looking for the right husband for her. Many princes came from faraway lands, but none of them was a good match for the princess.\nSon Tinh was the Spirit of the Mountain, and Thuy Tinh was the Spirit of the Waters. One day, they both appeared as young noblemen and asked to marry the princess. They were equally talented, powerful, and respected. The King found it hard to choose, so he decided to give them a test. He said that the one who brought the proper wedding gifts first the next morning would marry his daughter.\nThe next day, Son Tinh arrived early with his gifts. The King kept his promise and gave the princess to him. Thuy Tinh was angry about losing. He challenged Son Tinh to fight for the princess. But Son Tinh refused, believing he had already won fairly. Furious, Thuy Tinh used his power to call the rivers and streams to rise. Soon, the land was covered with floods that destroyed crops and homes.\nSon Tinh stayed calm in his mountain palace. Whenever the water rose, he made his mountains higher. After many days of fighting, Thuy Tinh grew tired and ordered the waters to retreat. Still, he never accepted his defeat. Every year, he tried again to attack, and this is how monsoons came to Vietnam.`,
+                question: "What is the main lesson of the story? (Select all correct answers)",
+                options: [
+                    "Accept defeat gracefully to prevent harm to others.",
+                    "Be fair and follow the agreed rules in competitions.",
+                    "Choose peaceful solutions rather than angry reactions.",
+                    "Prepare honestly and present your gifts properly.",
+                    "Respect leaders' decisions and community agreements."
+                ],
+                key: [0, 1]
+            },
+            {
+                id: 6,
+                type: "CATEGORY",
+                passage: null,
+                question: "Categorize the following study activities as either preparation or breaks during study:",
+                rows: [
+                    { statement: "A. Standing up", key: "Breaks" },
+                    { statement: "B. Bringing a book", key: "Preparation" },
+                    { statement: "C. Doing stretch", key: "Breaks" }
+                ],
+                categories: ["Preparation", "Breaks"]
+            },
+            {
+                id: 7,
+                type: "MCMA",
+                passage: null,
+                question: "How can we decide a certain table is perfect for studying according to standard study guidelines? (Select all correct answers)",
+                options: [
+                    "It has good lighting.",
+                    "It provides white noise.",
+                    "It is located near the entrance.",
+                    "It is far from the toilet.",
+                    "It provides stationery."
+                ],
+                key: [0, 3]
+            },
+            {
+                id: 8,
+                type: "PG",
+                passage: null,
+                question: "Who needs to read a library etiquette infographic placed in a school library?",
+                options: [
+                    "The students of that school",
+                    "People who happen to visit the school",
+                    "The librarian of another school",
+                    "The headmaster of that school",
+                    "Parents who come to pick up their kids"
+                ],
+                key: 0
+            },
+            {
+                id: 9,
+                type: "MCMA",
+                passage: null,
+                question: "Which actions show disrespect for other students in a library? (Select all correct answers)",
+                options: [
+                    "Speaking loudly to friends.",
+                    "Keeping the phone silent.",
+                    "Eating snacks at the desk.",
+                    "Playing music in the corner.",
+                    "Moving chairs noisily."
+                ],
+                key: [0, 2, 3, 4]
+            },
+            {
+                id: 10,
+                type: "PG",
+                passage: null,
+                question: "You find a library infographic in front of your school library. What will you do before your next visit to the library?",
+                options: [
+                    "Making sure that I bring my water bottle and lunch with me.",
+                    "Bringing the books and stationery that I will use.",
+                    "Organizing the book that I borrowed from the library.",
+                    "Walking for five minutes so I can focus more when studying.",
+                    "Making sure you look fresh because you will meet other students."
+                ],
+                key: 1
+            },
+            {
+                id: 11,
+                type: "CATEGORY",
+                passage: `Exploring Bali's Natural Wonders\nBali, a beautiful island in Indonesia, is known for its stunning landscapes and rich culture. While many come for the beaches and temples, the island also offers natural attractions that amaze nature lovers from around the world. From national parks and waterfalls to terraced rice fields, Bali is full of natural beauty.\nIn the west lies West Bali National Park, a peaceful area filled with green forests, calm mangrove swamps, and colorful coral reefs along the sea. The air is fresh, and the scenery feels untouched. One of the park's most special sights is the Bali Starling—a rare white bird with bright blue around its eyes. Its soft song adds magic to the quiet forest. Visitors can walk along clear paths and enjoy the rich variety of plants and animals in this protected area.\nHeading north, travelers find the scenic Munduk Waterfall, surrounded by green hills and forests. Water flows gently over rocky cliffs into a cool clear pool. Mist rises into the air, mixing with the calming sound of falling water. The walk to the waterfall passes through narrow paths lined with coffee and clove trees. Their fresh scent fills the air, offering a pleasant and peaceful experience. Munduk is the perfect place to relax and enjoy Bali's natural charm.\nNear the cultural center Ubud, the famous Tegalalang rice terraces stretch across the hills in green steps. These terraces are shaped by generations of farmers who work the land by hand. In the morning, mist rises above the fields, and sunlight reflects off the water in the paddies. Farmers in wide-brimmed hats plant rice carefully, their feet sinking into the soft earth. Water flows gently through small canals, keeping the fields healthy and green. The quiet surroundings and slow rhythm of farm life create a peaceful and inspiring scene.\nThese natural wonders highlight Bali's dedication in preserving its environmental and cultural treasures. By exploring these sites, tourists not only experience the island's scenic beauty but also support ongoing conservation efforts, helping to ensure that Bali's wonders last for future generations.`,
+                question: "What is the main purpose of visiting these places: to support conservation or to relax? Click Conservation or Relaxation for each place!",
+                rows: [
+                    { statement: "A. Munduk Waterfall", key: "Relaxation" },
+                    { statement: "B. West Bali National Park", key: "Conservation" },
+                    { statement: "C. Tegalalang Rice Terraces", key: "Relaxation" }
+                ],
+                categories: ["Conservation", "Relaxation"]
+            },
+            {
+                id: 12,
+                type: "PG",
+                passage: `Exploring Bali's Natural Wonders\n(Refer to the text provided in Question 11)`,
+                question: "The text mainly talks about Bali's …",
+                options: [
+                    "wildlife species and nature lovers.",
+                    "unique cultural treasures and sites.",
+                    "stunning nature and remarkable sites.",
+                    "generations and cultural conservation.",
+                    "scenic beauty and local farming practices."
+                ],
+                key: 2
+            },
+            {
+                id: 13,
+                type: "MCMA",
+                passage: `Exploring Bali's Natural Wonders\n(Refer to the text provided in Question 11)`,
+                question: "Which parts of the text best support the description of Bali as 'full of natural beauty'? (Select all correct answers)",
+                options: [
+                    "A peaceful area filled with green forests, calm mangrove swamps, and colorful coral reefs along the sea.",
+                    "These terraces are shaped by generations of farmers who work the land by hand.",
+                    "Water flows gently over rocky cliffs into a cool, clear pool. Mist rises into the air, mixing with the calming sound of falling water.",
+                    "In the morning, mist rises above the fields, and sunlight reflects off the water in the paddies.",
+                    "Farmers in wide-brimmed hats plant rice carefully, their feet sinking into the soft earth."
+                ],
+                key: [0, 2, 3]
+            },
+            {
+                id: 14,
+                type: "PG",
+                passage: `My Experience as an Intern at a Sports Club\nLast summer, I had the opportunity to work as an intern at a local sports club. It was my first time working in a professional sports environment, and I was both nervous and excited. The internship went through a few phases, starting from orientation until finally jumping in to help during practices and games.\nOn my first day, I met the head coach, who welcomed me and explained my tasks. I had to set up cones for drills, bring water for the players, and check the training schedules. The first few days were challenging because I was not used to the morning routine. Every morning I had to wake up early, arrive on time, and follow instructions carefully. I worried about making mistakes, but the coaches were kind and guided me.\nIn the second month of my internship, I was trained to handle emergency situations. I got the chance to put that knowledge into practice when something unexpected happened. During football practice, a player fell and hurt his ankle. Everyone stopped, and I quickly ran to get the first aid kit. I helped the coach assess the injury and ensured the player stayed calm while we got him seated safely. Luckily, it wasn't serious, but the experience reinforced an important lesson: staying alert and prepared during emergencies can make a big difference.\nAt the end of my internship, the coaches held an evaluation and reflection session where they shared the results of their feedback. They highlighted my strengths in teamwork, responsibility, and communication, and even gave me a club T-shirt as a gift. I felt proud because I had improved in these areas. It was a great experience, and I hope to work in a sports club again in the future.`,
+                question: "During the internship, what did the writer do every morning?",
+                options: [
+                    "Made schedules and explained them to the coaches.",
+                    "Played football with the team and got the first aid kit.",
+                    "Prepared a club gift, guided the coaches, and gave t-shirts.",
+                    "Woke up early, arrived on time, and followed the instructions.",
+                    "Set up cones, brought water, and checked emergency schedules."
+                ],
+                key: 3
+            },
+            {
+                id: 15,
+                type: "MCMA",
+                passage: `My Experience as an Intern at a Sports Club\n(Refer to the text provided in Question 14)`,
+                question: "What are the best words to describe the writer's personality during the internship? (Select all correct answers)",
+                options: [
+                    "Careful and ready to help",
+                    "Confident and enjoys working alone",
+                    "Responsible and willing to learn",
+                    "Friendly and works well with others",
+                    "Creative and likes to try new things"
+                ],
+                key: [0, 2, 3]
+            },
+            {
+                id: 16,
+                type: "PG",
+                passage: `My Experience as an Intern at a Sports Club\n(Refer to the text provided in Question 14)`,
+                question: "What will the writer most likely do after finishing the internship?",
+                options: [
+                    "Considering a career in sports medicine.",
+                    "Stop working and focus only on school.",
+                    "Look for another chance to work in a sports club.",
+                    "Study medicine to become a doctor.",
+                    "Train as a professional football player."
+                ],
+                key: 2
+            },
+            {
+                id: 17,
+                type: "MCMA",
+                passage: `Social Media Harms Teen Mental Health\nIn today's world, social media is a big part of many teenagers' daily lives. While it has some benefits, such as staying connected with friends, meeting new people, and learning about interesting topics, it also brings serious problems. I strongly believe that social media harms teen mental health, and we must pay more attention to this issue before it becomes even worse.\nFirst, social media often makes teenagers compare themselves to others in an unhealthy way. When teens see pictures of people who seem to have perfect lives, bodies, or achievements, they start feeling that they are not good enough. These feelings of inadequacy can lead to reduced self-esteem, anxiety, and depression.\nSecond, excessive screen time leads to sleep disruption. Many teenagers stay up late scrolling through notifications, videos, and messaging apps. Lack of sleep impairs concentration in school, causes mood swings, and weakens the immune system over time.\nFinally, cyberbullying remains a widespread issue on digital platforms. Unlike face-to-face bullying, cyberbullying occurs 24/7, making victims feel trapped and unsafe even in their own homes.\nIn conclusion, while social media offers social connection, its negative impacts on self-esteem, sleep, and safety cannot be ignored. Parents, schools, and teenagers themselves must work together to set healthy boundaries for screen time.`,
+                question: "According to the passage, what are the primary negative impacts of social media on teenagers? (Select all correct answers)",
+                options: [
+                    "Unhealthy social comparison with others.",
+                    "Feelings of inadequacy and reduced self-esteem.",
+                    "Increased risk of anxiety and depression.",
+                    "Improved academic performance and physical activity.",
+                    "Reduced sleep quality due to late-night screen time."
+                ],
+                key: [0, 1, 2, 4]
+            },
+            {
+                id: 18,
+                type: "PG",
+                passage: `Social Media Harms Teen Mental Health\n(Refer to the text provided in Question 17)`,
+                question: "What is the author's primary purpose in writing this article?",
+                options: [
+                    "To persuade teenagers to delete all social media applications immediately.",
+                    "To raise awareness regarding the negative impacts of social media on teen mental health.",
+                    "To explain how social media software developers create addictive algorithms.",
+                    "To teach parents how to inspect their children's private messages.",
+                    "To promote new educational mobile platforms designed for schools."
+                ],
+                key: 1
+            },
+            {
+                id: 19,
+                type: "CATEGORY",
+                passage: `Social Media Harms Teen Mental Health\n(Refer to the text provided in Question 17)`,
+                question: "Categorize the following effects mentioned in the text as either 'Mental Health Issues' or 'Physical & Environmental Issues':",
+                rows: [
+                    { statement: "A. Reduced self-esteem and anxiety", key: "Mental Health Issues" },
+                    { statement: "B. Sleep disruption from late-night scrolling", key: "Physical & Environmental Issues" },
+                    { statement: "C. Continuous cyberbullying occurring 24/7", key: "Physical & Environmental Issues" }
+                ],
+                categories: ["Mental Health Issues", "Physical & Environmental Issues"]
+            },
+            {
+                id: 20,
+                type: "PG",
+                passage: `Social Media Harms Teen Mental Health\n(Refer to the text provided in Question 17)`,
+                question: "What does the phrase 'feel trapped and unsafe' in paragraph 4 imply about victims of cyberbullying?",
+                options: [
+                    "They are physically locked inside their school facilities.",
+                    "They experience continuous emotional distress even in private spaces.",
+                    "They are prohibited from using mobile phones by their parents.",
+                    "They have forgotten how to configure privacy settings on social networks.",
+                    "They prefer online communications over meeting friends in person."
+                ],
+                key: 1
+            },
+            {
+                id: 21,
+                type: "PG",
+                passage: `Artificial Intelligence in Modern Education\nArtificial intelligence (AI) is rapidly changing the landscape of modern education. From personalized learning platforms to automated grading systems, AI tools are becoming commonplace in schools around the globe. While some educators worry that AI might replace human interaction, supporters argue that it enhances learning when used responsibly.\nOne major advantage of AI in education is personalized learning. Traditional classrooms often follow a fixed pace, which may be too fast for some students and too slow for others. AI-powered adaptive software analyzes individual student performance in real time and adjusts the difficulty of lessons accordingly. This allows struggling students to receive extra practice while advanced learners can move ahead without waiting.\nAnother benefit is the reduction of administrative workload for teachers. AI systems can automatically grade multiple-choice tests, organize lesson plans, and track attendance. Consequently, teachers save valuable hours every week, which they can redirect toward mentoring students and designing creative classroom activities.\nHowever, challenges remain. High-technology solutions require stable internet access and modern digital devices, creating a divide between wealthy and underfunded schools. Furthermore, over-reliance on AI chatbots for writing assignments can hinder students' critical thinking and research skills if not properly supervised. Therefore, educational institutions must establish clear guidelines to integrate AI as a supportive tool rather than a replacement for human intellect.`,
+                question: "What is the main idea of the passage?",
+                options: [
+                    "AI will completely replace traditional teachers in classrooms within a few years.",
+                    "AI brings significant educational benefits while also presenting challenges that require thoughtful guidelines.",
+                    "Traditional classrooms are obsolete and should be replaced by distance learning.",
+                    "Teachers spend too much time grading papers and should abandon administrative tasks.",
+                    "Underfunded schools should refrain from adopting modern digital tools."
+                ],
+                key: 1
+            },
+            {
+                id: 22,
+                type: "CATEGORY",
+                passage: `Artificial Intelligence in Modern Education\n(Refer to the text provided in Question 21)`,
+                question: "Categorize each aspect mentioned in the passage as either an 'Advantage' or a 'Challenge' of AI in education:",
+                rows: [
+                    { statement: "A. Adaptive software adjusting lesson difficulty based on student pace", key: "Advantage" },
+                    { statement: "B. Digital divide between wealthy and underfunded schools", key: "Challenge" },
+                    { statement: "C. Over-reliance on tools hindering critical thinking skills", key: "Challenge" }
+                ],
+                categories: ["Advantage", "Challenge"]
+            },
+            {
+                id: 23,
+                type: "MCMA",
+                passage: `Artificial Intelligence in Modern Education\n(Refer to the text provided in Question 21)`,
+                question: "According to the text, how does AI benefit teachers? (Select all correct answers)",
+                options: [
+                    "It automatically grades multiple-choice tests.",
+                    "It reduces administrative workload and saves weekly hours.",
+                    "It eliminates the need for teachers to mentor students.",
+                    "It helps track student attendance and organize lesson plans.",
+                    "It guarantees equal financial funding for all public schools."
+                ],
+                key: [0, 1, 3]
+            },
+            {
+                id: 24,
+                type: "PG",
+                passage: `Artificial Intelligence in Modern Education\n(Refer to the text provided in Question 21)`,
+                question: "What does the word 'hinder' in paragraph 4 most nearly mean?",
+                options: [
+                    "Encourage or boost",
+                    "Obstruct or slow down",
+                    "Accelerate rapidly",
+                    "Simplify easily",
+                    "Protect safely"
+                ],
+                key: 1
+            },
+            {
+                id: 25,
+                type: "MCMA",
+                passage: `Artificial Intelligence in Modern Education\n(Refer to the text provided in Question 21)`,
+                question: "Based on the conclusion of the passage, what steps should educational institutions take regarding AI? (Select all correct answers)",
+                options: [
+                    "Establish clear guidelines for AI tool usage.",
+                    "Use AI as a supportive tool alongside human intellect.",
+                    "Ban all digital technology from classrooms permanently.",
+                    "Ensure students are properly supervised when using AI tools.",
+                    "Replace human mentors with automated software assistants."
+                ],
+                key: [0, 1, 3]
+            }
+        ];
+
+        // -------------------------------------------------------------
+        // APPLICATION STATE VARIABLES
+        // -------------------------------------------------------------
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // { qIndex: value }
+        let doubtfulMarks = {}; // { qIndex: boolean }
+        let timeRemaining = 60 * 60; // 60 minutes in seconds
+        let timerInterval = null;
+        let studentName = "";
+
+        // -------------------------------------------------------------
+        // ANTI-CHEATING SYSTEM
+        // -------------------------------------------------------------
+        function triggerCheatingDetection() {
+            // Reset all user answers
+            userAnswers = {};
+            doubtfulMarks = {};
+            renderQuestion();
+            updatePalette();
+            
+            // Display alert modal
+            document.getElementById('securityModal').classList.remove('hidden');
+        }
+
+        function dismissSecurityModal() {
+            document.getElementById('securityModal').classList.add('hidden');
+        }
+
+        // 1. Detect Tab Switch / Window Blur
+        window.addEventListener('blur', () => {
+            if (!document.getElementById('examScreen').classList.contains('hidden')) {
+                triggerCheatingDetection();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && !document.getElementById('examScreen').classList.contains('hidden')) {
+                triggerCheatingDetection();
+            }
+        });
+
+        // 2. Prevent Context Menu (Right Click), Copy, Paste, Cut
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('paste', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+        document.addEventListener('selectstart', e => e.preventDefault());
+
+        // 3. Prevent Keyboard Shortcuts (F12, Ctrl+Shift+I, Ctrl+U, etc.)
+        document.addEventListener('keydown', (e) => {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+                triggerCheatingDetection();
+            }
+        });
+
+        // 4. MutationObserver to detect Google Translate elements injected into DOM
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && (
+                        node.classList.contains('goog-te-banner-frame') ||
+                        node.id === 'goog-gt-' ||
+                        node.tagName === 'VIETNAM-TRANSLATE'
+                    )) {
+                        triggerCheatingDetection();
+                    }
+                });
+            });
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // -------------------------------------------------------------
+        // EXAM FLOW LOGIC
+        // -------------------------------------------------------------
+        function startExam(e) {
+            e.preventDefault();
+            studentName = document.getElementById('studentName').value.trim();
+            if (!studentName) return;
+
+            document.getElementById('candidateDisplayName').innerText = `Student: ${studentName}`;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('examScreen').classList.remove('hidden');
+            document.getElementById('examScreen').classList.add('flex');
+
+            startTimer();
+            renderQuestion();
+            renderPalette();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                let mins = Math.floor(timeRemaining / 60);
+                let secs = timeRemaining % 60;
+                document.getElementById('timerDisplay').innerText = 
+                    `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    autoSubmitExam();
+                }
+            }, 1000);
+        }
+
+        function renderQuestion() {
+            const q = questionsData[currentQuestionIndex];
+
+            // Render Badge & Meta
+            document.getElementById('questionBadge').innerText = `Question ${currentQuestionIndex + 1} of ${questionsData.length}`;
+            document.getElementById('questionTypeBadge').innerText = 
+                q.type === 'PG' ? 'Single Choice' : (q.type === 'MCMA' ? 'Multiple Answers' : 'Category Matching');
+
+            // Render Passage if available
+            const passageBox = document.getElementById('passageBox');
+            if (q.passage) {
+                passageBox.classList.remove('hidden');
+                document.getElementById('passageContent').innerText = q.passage;
+            } else {
+                passageBox.classList.add('hidden');
+            }
+
+            // Render Question Text
+            document.getElementById('questionText').innerText = q.question;
+
+            // Render Options Area
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            if (q.type === 'PG') {
+                q.options.forEach((opt, idx) => {
+                    const isSelected = userAnswers[currentQuestionIndex] === idx;
+                    const optEl = document.createElement('label');
+                    optEl.className = `flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition text-xs sm:text-sm ${
+                        isSelected ? 'bg-brand-50 border-brand-500 text-brand-900 font-medium' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+                    }`;
+                    optEl.innerHTML = `
+                        <input type="radio" name="opt" class="mt-0.5 accent-brand-600" ${isSelected ? 'checked' : ''} onchange="selectSingleAnswer(${idx})">
+                        <span class="flex-1">${String.fromCharCode(65 + idx)}. ${opt}</span>
+                    `;
+                    container.appendChild(optEl);
+                });
+            } else if (q.type === 'MCMA') {
+                const currentAns = userAnswers[currentQuestionIndex] || [];
+                q.options.forEach((opt, idx) => {
+                    const isChecked = currentAns.includes(idx);
+                    const optEl = document.createElement('label');
+                    optEl.className = `flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition text-xs sm:text-sm ${
+                        isChecked ? 'bg-brand-50 border-brand-500 text-brand-900 font-medium' : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700'
+                    }`;
+                    optEl.innerHTML = `
+                        <input type="checkbox" class="mt-0.5 accent-brand-600 rounded" ${isChecked ? 'checked' : ''} onchange="toggleMCMAAnswer(${idx})">
+                        <span class="flex-1">${String.fromCharCode(65 + idx)}. ${opt}</span>
+                    `;
+                    container.appendChild(optEl);
+                });
+            } else if (q.type === 'CATEGORY') {
+                const currentAns = userAnswers[currentQuestionIndex] || {};
+                const table = document.createElement('div');
+                table.className = 'overflow-x-auto border border-slate-200 rounded-xl';
+                let tableHTML = `
+                    <table class="w-full text-xs sm:text-sm text-left">
+                        <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Statements</th>
+                                ${q.categories.map(cat => `<th class="p-3 text-center min-w-[100px]">${cat}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                `;
+
+                q.rows.forEach((row, rIdx) => {
+                    tableHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-800 font-medium">${row.statement}</td>
+                            ${q.categories.map(cat => {
+                                const isChecked = currentAns[rIdx] === cat;
+                                return `
+                                    <td class="p-3 text-center">
+                                        <input type="radio" name="cat_row_${rIdx}" class="accent-brand-600" ${isChecked ? 'checked' : ''} onchange="selectCategoryAnswer(${rIdx}, '${cat}')">
+                                    </td>
+                                `;
+                            }).join('')}
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `</tbody></table>`;
+                table.innerHTML = tableHTML;
+                container.appendChild(table);
+            }
+
+            // Update Doubt Button UI
+            const isDoubt = !!doubtfulMarks[currentQuestionIndex];
+            const doubtBtn = document.getElementById('btnDoubt');
+            if (isDoubt) {
+                doubtBtn.classList.add('bg-amber-400', 'text-slate-900');
+                doubtBtn.classList.remove('text-amber-700');
+                document.getElementById('doubtBtnText').innerText = "Marked Doubtful";
+            } else {
+                doubtBtn.classList.remove('bg-amber-400', 'text-slate-900');
+                doubtBtn.classList.add('text-amber-700');
+                document.getElementById('doubtBtnText').innerText = "Mark Doubtful";
+            }
+
+            // Prev / Next button state
+            document.getElementById('btnPrev').disabled = currentQuestionIndex === 0;
+            document.getElementById('btnPrev').classList.toggle('opacity-50', currentQuestionIndex === 0);
+
+            updatePalette();
+        }
+
+        // -------------------------------------------------------------
+        // ANSWER SELECTION HANDLERS
+        // -------------------------------------------------------------
+        function selectSingleAnswer(optionIdx) {
+            userAnswers[currentQuestionIndex] = optionIdx;
+            renderQuestion();
+        }
+
+        function toggleMCMAAnswer(optionIdx) {
+            let current = userAnswers[currentQuestionIndex] || [];
+            if (current.includes(optionIdx)) {
+                current = current.filter(i => i !== optionIdx);
+            } else {
+                current.push(optionIdx);
+            }
+            userAnswers[currentQuestionIndex] = current;
+            renderQuestion();
+        }
+
+        function selectCategoryAnswer(rowIdx, categoryVal) {
+            let current = userAnswers[currentQuestionIndex] || {};
+            current[rowIdx] = categoryVal;
+            userAnswers[currentQuestionIndex] = current;
+            renderQuestion();
+        }
+
+        function toggleDoubtMark() {
+            doubtfulMarks[currentQuestionIndex] = !doubtfulMarks[currentQuestionIndex];
+            renderQuestion();
+        }
+
+        function navigateQuestion(direction) {
+            const nextIdx = currentQuestionIndex + direction;
+            if (nextIdx >= 0 && nextIdx < questionsData.length) {
+                currentQuestionIndex = nextIdx;
+                renderQuestion();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            currentQuestionIndex = idx;
+            renderQuestion();
+        }
+
+        // -------------------------------------------------------------
+        // QUESTION PALETTE LOGIC
+        // -------------------------------------------------------------
+        function renderPalette() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+            questionsData.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `palette-btn-${idx}`;
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.className = `h-10 rounded-xl font-bold text-xs transition flex items-center justify-center border`;
+                grid.appendChild(btn);
+            });
+            updatePalette();
+        }
+
+        function updatePalette() {
+            let answeredCount = 0;
+            let doubtfulCount = 0;
+
+            questionsData.forEach((_, idx) => {
+                const btn = document.getElementById(`palette-btn-${idx}`);
+                if (!btn) return;
+
+                const isCurrent = idx === currentQuestionIndex;
+                const isDoubt = !!doubtfulMarks[idx];
+                const hasAns = isAnswered(idx);
+
+                if (hasAns) answeredCount++;
+                if (isDoubt) doubtfulCount++;
+
+                let baseClass = "h-10 rounded-xl font-bold text-xs transition flex items-center justify-center border ";
+
+                if (isCurrent) {
+                    baseClass += "ring-2 ring-slate-900 border-slate-900 ";
+                }
+
+                if (isDoubt) {
+                    baseClass += "bg-amber-400 text-slate-900 border-amber-500";
+                } else if (hasAns) {
+                    baseClass += "bg-brand-600 text-white border-brand-700";
+                } else {
+                    baseClass += "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+                }
+
+                btn.className = baseClass;
+                btn.innerText = idx + 1;
+            });
+
+            document.getElementById('countAnswered').innerText = answeredCount;
+            document.getElementById('countDoubtful').innerText = doubtfulCount;
+            document.getElementById('countUnanswered').innerText = questionsData.length - answeredCount;
+        }
+
+        function isAnswered(idx) {
+            const q = questionsData[idx];
+            const ans = userAnswers[idx];
+
+            if (ans === undefined || ans === null) return false;
+
+            if (q.type === 'PG') {
+                return typeof ans === 'number';
+            } else if (q.type === 'MCMA') {
+                return Array.isArray(ans) && ans.length > 0;
+            } else if (q.type === 'CATEGORY') {
+                return Object.keys(ans).length === q.rows.length;
+            }
+            return false;
+        }
+
+        function toggleMobilePalette() {
+            const pal = document.getElementById('paletteColumn');
+            pal.classList.toggle('hidden');
+            pal.classList.toggle('fixed');
+            pal.classList.toggle('inset-0');
+            pal.classList.toggle('z-40');
+            pal.classList.toggle('p-4');
+            pal.classList.toggle('bg-slate-900/50');
+        }
+
+        // -------------------------------------------------------------
+        // EVALUATION & SCORE CALCULATION
+        // -------------------------------------------------------------
+        function confirmSubmitExam() {
+            if (confirm("Are you sure you want to finish and submit your exam?")) {
+                submitExam();
+            }
+        }
+
+        function autoSubmitExam() {
+            alert("Time's up! Your exam will be submitted automatically.");
+            submitExam();
+        }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+
+            let correctCount = 0;
+
+            questionsData.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+
+                if (q.type === 'PG') {
+                    if (userAns === q.key) correctCount++;
+                } else if (q.type === 'MCMA') {
+                    if (Array.isArray(userAns)) {
+                        const sortedUser = [...userAns].sort().join(',');
+                        const sortedKey = [...q.key].sort().join(',');
+                        if (sortedUser === sortedKey) correctCount++;
+                    }
+                } else if (q.type === 'CATEGORY') {
+                    if (userAns && typeof userAns === 'object') {
+                        let isAllCorrect = true;
+                        q.rows.forEach((row, rIdx) => {
+                            if (userAns[rIdx] !== row.key) {
+                                isAllCorrect = false;
+                            }
+                        });
+                        if (isAllCorrect) correctCount++;
+                    }
+                }
+            });
+
+            const total = questionsData.length;
+            const incorrectCount = total - correctCount;
+            const percentage = Math.round((correctCount / total) * 100);
+
+            document.getElementById('studentResultName').innerText = `Candidate: ${studentName}`;
+            document.getElementById('finalScoreDisplay').innerText = `${percentage}%`;
+            document.getElementById('correctCount').innerText = correctCount;
+            document.getElementById('incorrectCount').innerText = incorrectCount;
+
+            document.getElementById('examScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.add('flex');
+        }
+    </script>
+</body>
+</html>
